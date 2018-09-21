@@ -1,41 +1,55 @@
-from tkinter import *
+#from tkinter import * 
 from tkinter import filedialog
+
+
 import numpy as np
+import tkinter as tk
+
+import matplotlib
+matplotlib.use("TkAgg")
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTk, NavigationToolbar2Tk
+from matplotlib.figure import Figure
 
 
 
 
-class Window(Frame):
+class Window(tk.Frame):
 
     def __init__(self, master=None):
         
-        Frame.__init__(self, master)   
+        tk.Frame.__init__(self, master)   
 
         self.master = master
+        
+        self.window = tk.Canvas(self, width=100, height=100)
+        self.window.pack()
 
         self.init_window()
 
     #Creation of init_window
     def init_window(self):
 
-        self.master.title("GUI")
+        self.master.title("SpecView")
+        
 
         # allowing the widget to take the full space of the root window
-        self.pack(fill=BOTH, expand=1)
+        self.pack(fill=tk.BOTH, expand=1)
 
         # creating a menu instance
-        menu = Menu(self.master)
+        menu = tk.Menu(self.master)
         self.master.config(menu=menu)
 
-        file = Menu(menu)
+        file = tk.Menu(menu)
         file.add_command(label="Open", command=self.openFile)
         file.add_command(label="Exit", command=self.exit)
         menu.add_cascade(label="File", menu=file)
 
-        edit = Menu(menu)
+        edit = tk.Menu(menu)
         edit.add_command(label="Undo")
         menu.add_cascade(label="Edit", menu=edit)
 
+        self.plot()
     
     def exit(self):
         exit()
@@ -76,10 +90,6 @@ class Window(Frame):
             dataLine=spectrum[j]
             dataString=str(dataLine)
             dataLine=(dataString[1:-1])
-
-            print (dataLine)
-
-            #Loop through my_data and produce 11 arrays
             splitString=dataLine.split(',')
             
             iE_.append(float(splitString[0]))
@@ -93,12 +103,9 @@ class Window(Frame):
             H2_.append(float(splitString[8]))
             H3_.append(float(splitString[9]))
             H4_.append(float(splitString[10]))
-
-        
         
             j=j+1
-
-
+        #Make the channels global
         global iE
         global L5
         global L4
@@ -110,9 +117,6 @@ class Window(Frame):
         global H2
         global H3
         global H4
-
-        
-        
 
         iE=iE_
         L5=L5_
@@ -127,12 +131,38 @@ class Window(Frame):
         H4=H4_
 
 
+
+    def plot(self):
+        
+
+
+        fig = Figure()
+        ax = fig.add_subplot(111)
+        t = np.arange(0.0,3.0,0.01)
+        s = np.sin(np.pi*t)
+        ax.plot(t,s)
+
+        canvas = FigureCanvasTk(fig, self.window)
+        plot_widget = canvas.get_tk_widget()
+
+        def update():
+            s = np.cos(np.pi*t)
+            ax.plot(t,s)
+            fig.canvas.draw_idle()
+        update()
+            
+        canvas.get_tk_widget().pack()
+
+        toolbar = NavigationToolbar2Tk(canvas, root)
+        toolbar.update()
+        
+   
         
 # root window created. Here, that would be the only window, but
 # you can later have windows within windows.
-root = Tk()
+root = tk.Tk()
 
-root.geometry("400x300")
+root.geometry("800x600")
 
 #creation of an instance
 app = Window(root)
