@@ -1,37 +1,38 @@
 #from tkinter import * 
 from tkinter import filedialog
-
+import matplotlib.pyplot as plt
 
 import numpy as np
 import tkinter as tk
-
+root = tk.Tk()
 import matplotlib
 matplotlib.use("TkAgg")
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTk, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
-
-
+fig = Figure()
+canvas = FigureCanvasTk(fig, root)
+canvas.get_tk_widget().pack()
+toolbar = NavigationToolbar2Tk(canvas, root)
+toolbar.update()
 
 class Window(tk.Frame):
 
     def __init__(self, master=None):
         
         tk.Frame.__init__(self, master)   
-
         self.master = master
-        
-        self.window = tk.Canvas(self, width=100, height=100)
-        self.window.pack()
-
         self.init_window()
 
-    #Creation of init_window
     def init_window(self):
 
         self.master.title("SpecView")
-        
+
+                
+##        self.window = tk.Canvas(self, width=100, height=100)
+##        self.canvas = FigureCanvasTk(fig,self.window ) 
+##        self.window.pack()
 
         # allowing the widget to take the full space of the root window
         self.pack(fill=tk.BOTH, expand=1)
@@ -49,7 +50,7 @@ class Window(tk.Frame):
         edit.add_command(label="Undo")
         menu.add_cascade(label="Edit", menu=edit)
 
-        self.plot()
+       # self.plot()
     
     def exit(self):
         exit()
@@ -136,31 +137,24 @@ class Window(tk.Frame):
         
 
 
-        fig = Figure()
+##        fig = Figure()
+##        ax = fig.add_subplot(111)
         ax = fig.add_subplot(111)
         t = np.arange(0.0,3.0,0.01)
         s = np.sin(np.pi*t)
         ax.plot(t,s)
-
-        canvas = FigureCanvasTk(fig, self.window)
-        plot_widget = canvas.get_tk_widget()
-
-        def update():
-            s = np.cos(np.pi*t)
-            ax.plot(t,s)
-            fig.canvas.draw_idle()
-        update()
+                
+        fig.draw()
+        fig.show()
+  
             
-        canvas.get_tk_widget().pack()
-
-        toolbar = NavigationToolbar2Tk(canvas, root)
-        toolbar.update()
         
-   
+
+
         
 # root window created. Here, that would be the only window, but
 # you can later have windows within windows.
-root = tk.Tk()
+
 
 root.geometry("800x600")
 
