@@ -1,19 +1,32 @@
-#from tkinter import * 
-from tkinter import filedialog
-import matplotlib.pyplot as plt
-
-import numpy as np
-import tkinter as tk
-root = tk.Tk()
+import random
 import matplotlib
+import tkinter as tk
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
+import numpy as np
+from tkinter import filedialog
+
+##from tkinter import * 
+##
+##import matplotlib.pyplot as plt
+##
+##import numpy as np
+##import tkinter as tk
+##root = tk.Tk()
+##import matplotlib
 matplotlib.use("TkAgg")
 
-from matplotlib.backends.backend_tkagg import FigureCanvasTk, NavigationToolbar2Tk
-from matplotlib.figure import Figure
+##from matplotlib.backends.backend_tkagg import FigureCanvasTk, NavigationToolbar2Tk
+##from matplotlib.figure import Figure
 
-fig = Figure()
-canvas = FigureCanvasTk(fig, root)
+
+root = tk.Tk()
+fig = plt.Figure()
+canvas = FigureCanvasTkAgg(fig, root)
 canvas.get_tk_widget().pack()
+ax = fig.add_subplot(111)
 toolbar = NavigationToolbar2Tk(canvas, root)
 toolbar.update()
 
@@ -28,11 +41,6 @@ class Window(tk.Frame):
     def init_window(self):
 
         self.master.title("SpecView")
-
-                
-##        self.window = tk.Canvas(self, width=100, height=100)
-##        self.canvas = FigureCanvasTk(fig,self.window ) 
-##        self.window.pack()
 
         # allowing the widget to take the full space of the root window
         self.pack(fill=tk.BOTH, expand=1)
@@ -50,7 +58,7 @@ class Window(tk.Frame):
         edit.add_command(label="Undo")
         menu.add_cascade(label="Edit", menu=edit)
 
-       # self.plot()
+        
     
     def exit(self):
         exit()
@@ -130,22 +138,21 @@ class Window(tk.Frame):
         H2=H2_
         H3=H3_
         H4=H4_
-
-
-
-    def plot(self):
+        
+        self.plot(iE, L3)
         
 
-
-##        fig = Figure()
-##        ax = fig.add_subplot(111)
-        ax = fig.add_subplot(111)
-        t = np.arange(0.0,3.0,0.01)
-        s = np.sin(np.pi*t)
+    def plot(self, t,s):
+    
+        
+        #t = np.arange(0.0,3.0,0.01)
+        #s = np.sin(np.pi*t)
         ax.plot(t,s)
                 
-        fig.draw()
-        fig.show()
+        fig.canvas.draw_idle()
+        root.update()  
+
+        
   
             
         
