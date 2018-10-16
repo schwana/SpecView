@@ -1,25 +1,13 @@
-import random
 import matplotlib
 import tkinter as tk
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 import numpy as np
 from tkinter import filedialog
+from scipy import signal
 
-##from tkinter import * 
-##
-##import matplotlib.pyplot as plt
-##
-##import numpy as np
-##import tkinter as tk
-##root = tk.Tk()
-##import matplotlib
-matplotlib.use("TkAgg")
-
-##from matplotlib.backends.backend_tkagg import FigureCanvasTk, NavigationToolbar2Tk
-##from matplotlib.figure import Figure
+#matplotlib.use("TkAgg")
 
 N=0
 root = tk.Tk()
@@ -30,7 +18,7 @@ ax = fig.add_subplot(111)
 toolbar = NavigationToolbar2Tk(canvas, root)
 toolbar.update()
 
-
+######################################################
         
 class GraphFrame(tk.Frame):
 
@@ -43,24 +31,23 @@ class GraphFrame(tk.Frame):
     def init_window(self):
 
         self.master.title("SpecView")
-        # allowing the widget to take the full space of the root window
+
         self.pack(fill=tk.NONE)
 
-        # creating a menu instance
+        # Create the menus
         menu = tk.Menu(self.master)
         self.master.config(menu=menu)
 
+        #File - Open, and Exit
         file = tk.Menu(menu)
         file.add_command(label="Open", command=self.openFile)
         file.add_command(label="Exit", command=self.exit)
         menu.add_cascade(label="File", menu=file)
 
+        #Edit - does noting at the moment
         edit = tk.Menu(menu)
         edit.add_command(label="Undo")
         menu.add_cascade(label="Edit", menu=edit)
-        
-
-
     
     def exit(self):
         exit()
@@ -69,18 +56,14 @@ class GraphFrame(tk.Frame):
         global spectrum
         #Open file to read spectrum
         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("dat files","*.dat"),("all files","*.*")))
-        print (root.filename)
-        #add data to the global spectrum
 
         try:
             spectrum=np.genfromtxt(root.filename,delimiter='\t', invalid_raise = False, names=True)
-
         except Warning as e:
            print (e)
 
         self.channelConv()
 
-    
     def channelConv(self):
         j=0
         global spectrum
@@ -147,12 +130,12 @@ class GraphFrame(tk.Frame):
         
         p=GraphFrame.plot()
         
+        peaks, properties = signal.find_peaks(L2, prominence=(None, 0.6))
         
-
-
-
-            
+        print (peaks, properties["prominences"].max())
     
+        #print (peakind, Ax_[peakind], iE_[peakind])
+        
     def plot():
 
         ax.clear()
@@ -170,13 +153,13 @@ class GraphFrame(tk.Frame):
             ax.plot(iE,L2,color='cyan')
 
         if Controls.L1_checked.get():
-            ax.plot(iE,L1,color='yellow')
+            ax.plot(iE,L1,color='black')
 
         if Controls.Ax_checked.get():
             ax.plot(iE,Ax,color='magenta')            
 
         if Controls.H1_checked.get():
-            ax.plot(iE,H1,color='black')
+            ax.plot(iE,H1,color='yellow')
 
         if Controls.H2_checked.get():
             ax.plot(iE,H2,color='0.25')              
@@ -186,26 +169,23 @@ class GraphFrame(tk.Frame):
 
         if Controls.H4_checked.get():
             ax.plot(iE,H4,color='0.75')
-
             
         fig.canvas.draw_idle()
         root.update()
         return 1
 
     def UpdatePlot():
-        #Check to see if a scan is loaded. If iE is empty then dont call the plot
+        #Check to see if a scan is loaded. 
         print ("N", N)
         if (N>0):
             p=GraphFrame.plot()
-##        else:
-##            print ("iE off")
 
-  
+######################################################
+            
 class Controls(tk.Frame):
     
     def __init__(self, root):
         tk.Frame.__init__(self, root)
-
 
     def callback(*args):
         print ("variable changed!")
@@ -217,7 +197,7 @@ class Controls(tk.Frame):
     
     L4_checked = tk.IntVar()
     L4_checked.trace("w", callback)
-    L4_checked.set(0)
+    L4_checked.set(1)
 
     L3_checked = tk.IntVar()
     L3_checked.trace("w", callback)
@@ -225,7 +205,7 @@ class Controls(tk.Frame):
 
     L2_checked = tk.IntVar()
     L2_checked.trace("w", callback)
-    L2_checked.set(0)
+    L2_checked.set(1)
 
     L1_checked = tk.IntVar()
     L1_checked.trace("w", callback)
@@ -233,7 +213,7 @@ class Controls(tk.Frame):
 
     Ax_checked = tk.IntVar()
     Ax_checked.trace("w", callback)
-    Ax_checked.set(0)
+    Ax_checked.set(1)
     
     H1_checked = tk.IntVar()
     H1_checked.trace("w", callback)
@@ -251,8 +231,6 @@ class Controls(tk.Frame):
     H4_checked.trace("w", callback)
     H4_checked.set(0)
 
-
-
     c1=tk.Checkbutton(root, text="L5", onvalue=1, offvalue=0, variable=L5_checked)
     c2=tk.Checkbutton(root, text="L4", onvalue=1, offvalue=0, variable=L4_checked)
     c3=tk.Checkbutton(root, text="L3", onvalue=1, offvalue=0, variable=L3_checked)
@@ -263,48 +241,26 @@ class Controls(tk.Frame):
     c8=tk.Checkbutton(root, text="H2", onvalue=1, offvalue=0, variable=H2_checked)
     c9=tk.Checkbutton(root, text="H3", onvalue=1, offvalue=0, variable=H3_checked)
     c10=tk.Checkbutton(root, text="H4", onvalue=1, offvalue=0, variable=H4_checked)
-
     
-    c1.pack(side="left", fill="x")
-    c2.pack(side="left", fill="x")
-    c3.pack(side="left", fill="x")
-    c4.pack(side="left", fill="x")
-    c5.pack(side="left", fill="x")
-    c6.pack(side="left", fill="x")
-    c7.pack(side="left", fill="x")
-    c8.pack(side="left", fill="x")
-    c9.pack(side="left", fill="x")
-    c10.pack(side="left", fill="x")
-        
+    c1.pack(side="left", fill="x", expand='true')
+    c2.pack(side="left", fill="x", expand='true')
+    c3.pack(side="left", fill="x", expand='true')
+    c4.pack(side="left", fill="x", expand='true')
+    c5.pack(side="left", fill="x", expand='true')
+    c6.pack(side="left", fill="x", expand='true')
+    c7.pack(side="left", fill="x", expand='true')
+    c8.pack(side="left", fill="x", expand='true')
+    c9.pack(side="left", fill="x", expand='true')
+    c10.pack(side="left", fill="x", expand='true')
     
-
-
-
-
-
-       
-        
-        
-# root window created. Here, that would be the only window, but
-# you can later have windows within windows.
-
-
+######################################################       
 
 root.geometry("800x600")
 
-#creation of an instance
 graph = GraphFrame(root)
 controls=Controls(root)
 
 graph.pack(side="left", fill="x")
 controls.pack(side="bottom", fill="x")
 
-
-if controls.L5_checked.get():
-    print ("checked")
-
-
-print (controls.L5_checked.get())     
-
-#mainloop 
 root.mainloop()
